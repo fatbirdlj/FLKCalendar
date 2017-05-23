@@ -113,6 +113,13 @@
             [self.dotMarkerView removeFromSuperview];
         }
         
+        self.dayLabel.transform = CGAffineTransformMakeScale(0.5, 0.5);
+        self.topCircleView.transform = CGAffineTransformMakeScale(0.5, 0.5);
+        [UIView animateWithDuration:0.5 delay:0 usingSpringWithDamping:0.3 initialSpringVelocity:0.1 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+            self.dayLabel.transform = CGAffineTransformMakeScale(1, 1);
+            self.topCircleView.transform = CGAffineTransformMakeScale(1, 1);
+        } completion:nil];
+        
     } else {
         if (self.isToday) {
             self.dayLabel.textColor = [UIColor redColor];
@@ -126,7 +133,14 @@
         if (self.hasDotMarker) {
             self.hasDotMarker = true;
         }
-        [self.topCircleView removeFromSuperview];
+        
+        self.topCircleView.transform = CGAffineTransformMakeScale(1.1, 1.1);
+        [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            self.topCircleView.transform = CGAffineTransformMakeScale(0.1, 0.1);
+        } completion:^(BOOL finished) {
+            [self.topCircleView removeFromSuperview];
+        }];
+        
     }
 }
 

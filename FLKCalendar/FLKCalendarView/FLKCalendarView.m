@@ -93,9 +93,9 @@ typedef NS_ENUM(NSInteger,ScrollDirection){
         UIView *nextMonthView = self.monthViews[@(Next)];
         if (presentedYearMonth == presentedMonthView.tag) {
         } else if (presentedYearMonth == previousMonthView.tag) {
-            [self scrollRight:YES];
+            [self scrollRight];
         } else if (presentedYearMonth == nextMonthView.tag){
-            [self scrollLeft:YES];
+            [self scrollLeft];
         } else {
             [self reload];
         }
@@ -234,8 +234,10 @@ typedef NS_ENUM(NSInteger,ScrollDirection){
     
     NSArray *monthDates = [self getMonthDateRangeByOneDate:date];
     
+    NSInteger numberOfWeeks = [monthDates count]/7;
+    
     CGFloat dayViewWidth = CGRectGetWidth(monthView.frame)/7;
-    CGFloat dayViewHeight = CGRectGetHeight(monthView.frame)/6;
+    CGFloat dayViewHeight = CGRectGetHeight(monthView.frame)/numberOfWeeks;
     for (int i = 0; i < [monthDates count]; i++) {
         FLKDayView *dayView = [[FLKDayView alloc] initWithFrame:CGRectMake((i%7)*dayViewWidth, (i/7)*dayViewHeight, dayViewWidth, dayViewHeight) date:monthDates[i]];
         if (dayView.tag/100 == monthView.tag) {
@@ -294,13 +296,13 @@ typedef NS_ENUM(NSInteger,ScrollDirection){
     return dates;
 }
 
-- (void)replaceMonthView:(UIView *)monthView identifier:(MonthViewIdentifier)identifier animated:(BOOL)animated{
+- (void)replaceMonthView:(UIView *)monthView identifier:(MonthViewIdentifier)identifier scrollToVisible:(BOOL)scrollToVisible{
     CGRect originFrame = monthView.frame;
     originFrame.origin = CGPointMake(identifier*CGRectGetWidth(self.monthScrollView.frame), 0);
     monthView.frame = originFrame;
     
     self.monthViews[@(identifier)] = monthView;
-    if (animated) {
+    if (scrollToVisible) {
         [self.monthScrollView scrollRectToVisible:originFrame animated:NO];
     }
 }
@@ -341,14 +343,14 @@ typedef NS_ENUM(NSInteger,ScrollDirection){
         switch (self.scrollDirection) {
             case Right:
             {
-                [self scrollRight:NO];
+                [self scrollRight];
                 [self selectFirstMonthDate];
                 break;
             }
                 
             case Left:
             {
-                [self scrollLeft:NO];
+                [self scrollLeft];
                 [self selectFirstMonthDate];
                 break;
             }
@@ -359,20 +361,20 @@ typedef NS_ENUM(NSInteger,ScrollDirection){
     self.scrollDirection = None;
 }
 
-- (void)scrollRight:(BOOL)animated{
+- (void)scrollRight{
     [self.monthViews[@(Next)] removeFromSuperview];
-    [self replaceMonthView:self.monthViews[@(Present)] identifier:Next animated:NO];
-    [self replaceMonthView:self.monthViews[@(Previous)] identifier:Present animated:YES];
+    [self replaceMonthView:self.monthViews[@(Present)] identifier:Next scrollToVisible:NO];
+    [self replaceMonthView:self.monthViews[@(Previous)] identifier:Present scrollToVisible:YES];
     
     UIView *presentView = self.monthViews[@(Present)];
     NSDate *previousMonthDate = [self getPreviousMonthDateByMonthView:presentView];
     [self insertMonthView:previousMonthDate identifier:Previous];
 }
 
-- (void)scrollLeft:(BOOL)animated{
+- (void)scrollLeft{
     [self.monthViews[@(Previous)] removeFromSuperview];
-    [self replaceMonthView:self.monthViews[@(Present)] identifier:Previous animated:NO];
-    [self replaceMonthView:self.monthViews[@(Next)] identifier:Present animated:YES];
+    [self replaceMonthView:self.monthViews[@(Present)] identifier:Previous scrollToVisible:NO];
+    [self replaceMonthView:self.monthViews[@(Next)] identifier:Present scrollToVisible:YES];
     
     UIView *presentView = self.monthViews[@(Present)];
     NSDate *nextMonthDate = [self getNextMonthDateByMonthView:presentView];
