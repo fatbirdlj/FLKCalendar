@@ -23,7 +23,7 @@ typedef NS_ENUM(NSInteger,ScrollDirection){
 };
 
 
-@interface FLKCalendarView()<UIScrollViewDelegate>
+@interface FLKCalendarView()<UIScrollViewDelegate,UIGestureRecognizerDelegate>
 
 @property (strong,nonatomic) FLKDayView *selectedDayView;
 
@@ -50,6 +50,10 @@ typedef NS_ENUM(NSInteger,ScrollDirection){
     if (self = [super initWithFrame:frame]) {
         [self addSubview:self.weekDayTitlesView];
         [self addSubview:self.monthScrollView];
+
+        UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tap:)];
+        tapGesture.delegate = self;
+        [self addGestureRecognizer:tapGesture];
     }
     return  self;
 }
@@ -193,8 +197,10 @@ typedef NS_ENUM(NSInteger,ScrollDirection){
         } else {
             dayView.isOut = true;
         }
+        dayView.hasDotMarker = [self.delegate shouldShowDotMarker:dayView.date];
         [monthView addSubview:dayView];
     }
+    
     return monthView;
 }
 
@@ -324,6 +330,26 @@ typedef NS_ENUM(NSInteger,ScrollDirection){
         }
     }
     self.scrollDirection = None;
+}
+
+#pragma mark - tap
+
+- (void)tap:(UITapGestureRecognizer *)gesture{
+    CGPoint point = [gesture locationInView:self.monthScrollView];
+    UIView *hitView = [self.monthScrollView hitTest:point withEvent:nil];
+    FLKDayView *tappedView;
+    if ([hitView isKindOfClass:[FLKDayView class]]) {
+        tappedView = (FLKDayView *)hitView;
+    } else if ([hitView.superview isKindOfClass:[FLKDayView class]]){
+        tappedView = (FLKDayView *)(hitView.superview);
+    }
+    self.presentedDate = tappedView.date;
+}
+
+#pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch{
+    return CGRectContainsPoint(self.monthScrollView.bounds, [touch locationInView:self.monthScrollView]);
 }
 
 @end

@@ -12,6 +12,8 @@
 
 - (void)presentedDateDoUpdate:(NSDate *)date;
 
+- (BOOL)shouldShowDotMarker:(NSDate *)date;
+
 @end
 
 @interface FLKCalendarView : UIView

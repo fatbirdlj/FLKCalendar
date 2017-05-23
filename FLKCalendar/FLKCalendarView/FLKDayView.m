@@ -18,6 +18,7 @@
 @property (strong,nonatomic) FLKCircleView *topCircleView;
 @property (strong,nonatomic,readwrite) NSDate *date;
 @property (strong,nonatomic) CALayer *topMarker;
+@property (strong,nonatomic) FLKCircleView *dotMarkerView;
 @end
 
 @implementation FLKDayView
@@ -35,6 +36,7 @@
         
         [self addSubview:self.dayLabel];
         
+        self.userInteractionEnabled = YES;
     }
     return self;
 }
@@ -70,6 +72,15 @@
     return _topCircleView;
 }
 
+- (FLKCircleView *)dotMarkerView{
+    if (!_dotMarkerView) {
+        CGFloat yOffset = CGRectGetHeight(self.bounds)/4;
+        _dotMarkerView = [[FLKCircleView alloc] initWithFrame:CGRectMake(0, 0, 13, 13)];
+        _dotMarkerView.center = CGPointMake(CGRectGetMidX(self.bounds), CGRectGetMidY(self.bounds)+yOffset);
+    }
+    return _dotMarkerView;
+}
+
 - (BOOL)isToday{
     return [self.date compareDate:[NSDate date]] == 0;
 }
@@ -98,6 +109,9 @@
             self.topCircleView.fillColor = [UIColor blueColor];
         }
         [self insertSubview:self.topCircleView atIndex:0];
+        if (self.hasDotMarker) {
+            [self.dotMarkerView removeFromSuperview];
+        }
         
     } else {
         if (self.isToday) {
@@ -109,7 +123,24 @@
                 self.dayLabel.textColor = [UIColor blackColor];
             }
         }
-        self.topCircleView.fillColor = [UIColor clearColor];
+        if (self.hasDotMarker) {
+            self.hasDotMarker = true;
+        }
+        [self.topCircleView removeFromSuperview];
+    }
+}
+
+- (void)setHasDotMarker:(BOOL)hasDotMarker{
+    _hasDotMarker = hasDotMarker;
+    if (hasDotMarker) {
+        if (self.isOut) {
+            self.dotMarkerView.fillColor = [UIColor grayColor];
+        } else {
+            self.dotMarkerView.fillColor = [UIColor redColor];
+        }
+        [self insertSubview:self.dotMarkerView atIndex:0];
+    } else {
+        [self.dotMarkerView removeFromSuperview];
     }
 }
 
