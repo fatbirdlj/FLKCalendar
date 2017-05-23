@@ -12,4 +12,6 @@
 
 - (NSComparisonResult)compareDate:(NSDate *)date;
 
+- (NSInteger)dateInterger;
+
 @end

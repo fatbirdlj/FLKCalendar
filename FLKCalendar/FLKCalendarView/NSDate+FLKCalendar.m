@@ -17,4 +17,9 @@
     return [startDate1 compare:startDate2];
 }
 
+- (NSInteger)dateInterger{
+    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:self];
+    return components.year*10000 + components.month*100 + components.day;
+}
+
 @end

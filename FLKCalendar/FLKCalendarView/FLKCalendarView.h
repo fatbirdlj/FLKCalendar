@@ -20,4 +20,8 @@
 
 @property (weak,nonatomic) id<FLKCalendarViewDelegate> delegate;
 
+@property (strong,nonatomic) NSDate *presentedDate;
+
+- (instancetype)initWithFrame:(CGRect)frame initialDate:(NSDate *)initialDate;
+
 @end
